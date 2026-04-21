@@ -1,19 +1,209 @@
-(function(){
-'use strict';
-var tg=window.Telegram&&window.Telegram.WebApp;if(tg){tg.ready();tg.expand();tg.setHeaderColor('#050505');tg.setBackgroundColor('#050505')}
-var P=new URLSearchParams(location.search);var searches=[];try{searches=JSON.parse(P.get('searches')||'[]')}catch(e){}
-var REGIONS=[{id:'fr',name:'France',domain:'vinted.fr',flags:['🇫🇷']},{id:'de',name:'Germany',domain:'vinted.de',flags:['🇩🇪']},{id:'it',name:'Italy',domain:'vinted.it',flags:['🇮🇹']}];
-var editId=null,selRegions=new Set(['de']);
-function $(s){return document.querySelector(s)}function $$(s){return document.querySelectorAll(s)}function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
-$$('.tab').forEach(function(b){b.addEventListener('click',function(){$$('.page').forEach(function(p){p.classList.remove('active')});$$('.tab').forEach(function(n){n.classList.remove('active')});$('#'+b.dataset.tab).classList.add('active');b.classList.add('active')})});
-var tt;function toast(m){var t=$('#toast');t.textContent=m;t.classList.remove('hidden');clearTimeout(tt);tt=setTimeout(function(){t.classList.add('hidden')},2500)}function send(d){if(tg)tg.sendData(JSON.stringify(d));else{console.log(d);toast('dev')}}
-function getDomains(){var d=[];selRegions.forEach(function(rid){var r=REGIONS.find(function(x){return x.id===rid});if(r)d.push(r.domain)});return d.length?d:['vinted.de']}
-function renderRegions(){var g=$('#regionGrid');g.innerHTML='';REGIONS.forEach(function(r){var el=document.createElement('div');el.className='region'+(selRegions.has(r.id)?' active':'');el.innerHTML='<div class="region-top"><span class="region-name">'+r.name+'</span></div><div class="region-flags">'+r.flags.join(' ')+'</div>';el.addEventListener('click',function(){if(selRegions.has(r.id)){if(selRegions.size>1){selRegions.delete(r.id);el.classList.remove('active')}else toast('Минимум 1 страна')}else{if(selRegions.size>=3){toast('Максимум 3 страны');return}selRegions.add(r.id);el.classList.add('active')}});g.appendChild(el)})}
-function regionNameByDomain(domain){var r=REGIONS.find(function(x){return x.domain===domain});return r?r.name:domain}
-function renderSearches(){var list=$('#sList'),cnt=$('#sCnt');list.innerHTML='';cnt.textContent=searches.length;if(!searches.length){list.innerHTML='<div class="empty">Нет поисков</div>';return}searches.forEach(function(s){var card=document.createElement('div');card.className='s-card';var doms=(s.domain||'vinted.de').split(',').map(function(d){return regionNameByDomain(d.trim())}).join(', ');card.innerHTML='<div class="s-top"><div><div class="s-title">'+esc(s.query||'—')+'</div><div class="s-meta">'+esc(doms)+'</div></div></div><div class="s-actions"><button class="s-btn ed">Изменить</button><button class="s-btn danger dl">Удалить</button></div>';card.querySelector('.ed').addEventListener('click',function(){startEdit(s)});card.querySelector('.dl').addEventListener('click',function(){if(confirm('Удалить «'+s.query+'»?'))send({action:'delete',search_id:s.id})});list.appendChild(card)})}
-function startEdit(s){editId=s.id;$('#formTitle').textContent='Редактирование';$('#cancelBtn').classList.remove('hidden');$('#submitBtn').textContent='Сохранить';$('#query').value=s.query||'';$('#size').value=s.size||'';$('#min_price').value=s.min_price||'';$('#max_price').value=s.max_price||'';$('#minus_words').value=s.minus_words||'';$('#category').value=s.category||'all';selRegions.clear();(s.domain||'vinted.de').split(',').forEach(function(d){var r=REGIONS.find(function(x){return x.domain===d.trim()});if(r)selRegions.add(r.id)});if(!selRegions.size)selRegions.add('de');renderRegions()}
-function cancelEdit(){editId=null;$('#formTitle').textContent='Новый поиск';$('#cancelBtn').classList.add('hidden');$('#submitBtn').textContent='Создать поиск';$('#searchForm').reset();selRegions.clear();selRegions.add('de');renderRegions()}
-$('#cancelBtn').addEventListener('click',cancelEdit);
-$('#searchForm').addEventListener('submit',function(e){e.preventDefault();var q=$('#query').value.trim();if(!q){toast('Введи запрос');return}if(searches.length>=5&&!editId){toast('Максимум 5 поисков');return}var data={query:q,domain:getDomains(),category:$('#category').value,size:$('#size').value.trim(),min_price:parseFloat($('#min_price').value)||0,max_price:parseFloat($('#max_price').value)||0,minus_words:$('#minus_words').value.trim()};if(editId){data.action='edit';data.search_id=editId;toast('Сохраняю...')}else toast('Создаю...');send(data)});
-renderRegions();renderSearches();
+(function () {
+  'use strict';
+
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#050505');
+    tg.setBackgroundColor('#050505');
+  }
+
+  const P = new URLSearchParams(location.search);
+  let searches = [];
+  try { searches = JSON.parse(P.get('searches') || '[]'); } catch (e) {}
+
+  const REGIONS = [
+    { id: 'fr', name: 'France', domain: 'vinted.fr', flag: '🇫🇷' },
+    { id: 'de', name: 'Germany', domain: 'vinted.de', flag: '🇩🇪' },
+    { id: 'it', name: 'Italy', domain: 'vinted.it', flag: '🇮🇹' }
+  ];
+
+  let editId = null;
+  let selectedRegions = new Set(['de']);
+
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+
+  function toast(text) {
+    const el = $('#toast');
+    el.textContent = text;
+    el.classList.remove('hidden');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+  }
+
+  function send(payload) {
+    if (tg) tg.sendData(JSON.stringify(payload));
+    else console.log(payload);
+  }
+
+  function getDomains() {
+    const domains = [];
+    selectedRegions.forEach((id) => {
+      const region = REGIONS.find((x) => x.id === id);
+      if (region) domains.push(region.domain);
+    });
+    return domains.length ? domains : ['vinted.de'];
+  }
+
+  function renderRegions() {
+    const root = $('#regionGrid');
+    root.innerHTML = '';
+    REGIONS.forEach((r) => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'region' + (selectedRegions.has(r.id) ? ' active' : '');
+      el.innerHTML = `<span>${r.flag}</span><span>${r.name}</span>`;
+      el.addEventListener('click', () => {
+        if (selectedRegions.has(r.id)) {
+          if (selectedRegions.size === 1) {
+            toast('At least 1 country');
+            return;
+          }
+          selectedRegions.delete(r.id);
+        } else {
+          if (selectedRegions.size >= 3) {
+            toast('Maximum 3 countries');
+            return;
+          }
+          selectedRegions.add(r.id);
+        }
+        renderRegions();
+      });
+      root.appendChild(el);
+    });
+  }
+
+  function regionNameByDomain(domain) {
+    const found = REGIONS.find((x) => x.domain === domain);
+    return found ? found.name : domain;
+  }
+
+  function renderSearches() {
+    const root = $('#sList');
+    const counter = $('#sCnt');
+    counter.textContent = String(searches.length);
+    root.innerHTML = '';
+
+    if (!searches.length) {
+      root.innerHTML = `<div class="empty">No searches yet</div>`;
+      return;
+    }
+
+    searches.forEach((s) => {
+      const card = document.createElement('div');
+      card.className = 'search-card';
+      const domains = (s.domain || 'vinted.de')
+        .split(',')
+        .map((d) => regionNameByDomain(d.trim()))
+        .join(', ');
+
+      card.innerHTML = `
+        <div class="search-card-top">
+          <div>
+            <div class="search-title">${s.query || '—'}</div>
+            <div class="search-meta">${domains}</div>
+          </div>
+          <span class="state">ACTIVE</span>
+        </div>
+        <div class="search-actions">
+          <button type="button" class="ghost edit">Edit</button>
+          <button type="button" class="ghost danger remove">Delete</button>
+        </div>
+      `;
+
+      card.querySelector('.edit').addEventListener('click', () => startEdit(s));
+      card.querySelector('.remove').addEventListener('click', () => {
+        if (confirm(`Delete "${s.query}"?`)) {
+          send({ action: 'delete', search_id: s.id });
+        }
+      });
+
+      root.appendChild(card);
+    });
+  }
+
+  function startEdit(s) {
+    editId = s.id;
+    $('#query').value = s.query || '';
+    $('#category').value = s.category || 'all';
+    $('#size').value = s.size || '';
+    $('#min_price').value = s.min_price || '';
+    $('#max_price').value = s.max_price || '';
+    $('#minus_words').value = s.minus_words || '';
+    $('#submitBtn').textContent = 'Save Search';
+    $('#cancelBtn').classList.remove('hidden');
+
+    selectedRegions.clear();
+    (s.domain || 'vinted.de').split(',').forEach((d) => {
+      const region = REGIONS.find((x) => x.domain === d.trim());
+      if (region) selectedRegions.add(region.id);
+    });
+    if (!selectedRegions.size) selectedRegions.add('de');
+    renderRegions();
+
+    $$('.page').forEach((p) => p.classList.remove('active'));
+    $$('.tab').forEach((t) => t.classList.remove('active'));
+    $('#tabSearch').classList.add('active');
+    document.querySelector('.tab[data-tab="tabSearch"]').classList.add('active');
+  }
+
+  function cancelEdit() {
+    editId = null;
+    $('#searchForm').reset();
+    $('#submitBtn').textContent = 'Create Search';
+    $('#cancelBtn').classList.add('hidden');
+    selectedRegions = new Set(['de']);
+    renderRegions();
+  }
+
+  $('#cancelBtn').addEventListener('click', cancelEdit);
+
+  $$('.tab').forEach((b) => {
+    b.addEventListener('click', () => {
+      $$('.page').forEach((p) => p.classList.remove('active'));
+      $$('.tab').forEach((t) => t.classList.remove('active'));
+      $('#' + b.dataset.tab).classList.add('active');
+      b.classList.add('active');
+    });
+  });
+
+  $('#searchForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const query = $('#query').value.trim();
+    if (!query) {
+      toast('Enter brand/query');
+      return;
+    }
+
+    if (searches.length >= 5 && !editId) {
+      toast('Maximum 5 searches');
+      return;
+    }
+
+    const payload = {
+      query,
+      domain: getDomains(),
+      category: $('#category').value,
+      size: $('#size').value.trim(),
+      min_price: parseFloat($('#min_price').value) || 0,
+      max_price: parseFloat($('#max_price').value) || 0,
+      minus_words: $('#minus_words').value.trim()
+    };
+
+    if (editId) {
+      payload.action = 'edit';
+      payload.search_id = editId;
+      toast('Saving...');
+    } else {
+      toast('Creating...');
+    }
+
+    send(payload);
+  });
+
+  renderRegions();
+  renderSearches();
 })();
