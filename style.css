@@ -45,7 +45,7 @@ option{background:#111}
 .region-tk{width:7px;height:4px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg);opacity:0;transition:opacity .15s}
 .region.active .region-tk{opacity:1}
 .region-flags{display:flex;flex-wrap:wrap;gap:4px}
-.region-flag{font-size:14px;opacity:.7;transition:opacity .2s}.region.active .region-flag{opacity:1}
+.region-flag{font-size:16px;opacity:.9}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--gb);background:var(--glass);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all .25s;user-select:none}
 .chip:hover{border-color:var(--gb2)}.chip.active{border-color:var(--ac);background:var(--ag);color:var(--ac2)}
@@ -73,8 +73,6 @@ option{background:#111}
 .mets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .met{background:var(--glass);border:1px solid var(--gb);border-radius:var(--rs);padding:14px;display:flex;flex-direction:column;gap:4px;backdrop-filter:blur(12px)}
 .met-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:600}.met-v{font-size:17px;font-weight:700}
-.cta{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--ag);border-color:rgba(9,177,186,.15)}
-.cta-t{font-size:13px;font-weight:600}.cta-s{font-size:11px;color:var(--text2);margin-top:2px}
 .bar{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(5,5,5,.85);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-top:1px solid var(--gb);display:flex;justify-content:center;align-items:stretch;z-index:50;padding-bottom:env(safe-area-inset-bottom,0)}
 .tab{flex:1;max-width:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--text3);font:inherit;font-size:9px;font-weight:500;cursor:pointer;transition:all .2s;position:relative}
 .tab svg{transition:all .2s}.tab.active{color:var(--ac2)}.tab.active svg{transform:scale(1.1);filter:drop-shadow(0 0 6px var(--ag))}
