@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <title>Sniper</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Sniper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 <div class="glow g1"></div>
@@ -25,7 +25,7 @@
         <div class="f">
           <label>Запрос</label>
           <input id="query" type="text" placeholder="zara, nike dunk..." maxlength="120" required>
-          <span class="hint">Бот шлет только новые объявления после запуска поиска</span>
+          <span class="hint">На первом запуске старые объявления не отправляются</span>
         </div>
 
         <div class="f">
@@ -63,11 +63,6 @@
           </div>
         </div>
 
-        <div class="f">
-          <label>Состояние</label>
-          <div class="chips" id="condChips"></div>
-        </div>
-
         <button type="submit" class="main-btn" id="submitBtn">Создать засаду</button>
       </form>
     </div>
@@ -91,14 +86,8 @@
   </div>
 
   <nav class="bar">
-    <button class="tab active" data-tab="tabSearch">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-      <span>Поиск</span>
-    </button>
-    <button class="tab" data-tab="tabProfile">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>Профиль</span>
-    </button>
+    <button class="tab active" data-tab="tabSearch"><span>Поиск</span></button>
+    <button class="tab" data-tab="tabProfile"><span>Профиль</span></button>
   </nav>
 </div>
 <div class="toast hidden" id="toast"></div>
