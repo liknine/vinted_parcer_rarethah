@@ -1,3 +1,136 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sniper</title><link rel="stylesheet" href="style.css"><script src="https://telegram.org/js/telegram-web-app.js"></script></head>
-<body><div class="app"><div class="page active" id="tabSearch"><div class="hdr"><h1>Поиск</h1><p class="sub">HTML parsing · до 5 поисков</p></div><div class="glass" id="formCard"><div class="glass-top"><span class="glass-t" id="formTitle">Новый поиск</span><button class="x hidden" id="cancelBtn" type="button">&times;</button></div><form id="searchForm" autocomplete="off"><div class="f"><label>Запрос</label><input id="query" type="text" placeholder="zara, nike dunk..." maxlength="120" required></div><div class="f"><label>Страны</label><div class="regions" id="regionGrid"></div></div><div class="g2"><div class="f"><label>Категория</label><select id="category"><option value="all">Все</option><option value="clothes">Одежда</option><option value="shoes">Обувь</option></select></div><div class="f"><label>Размер</label><input id="size" type="text" placeholder="M, L, XL / 42"></div></div><div class="g3"><div class="f"><label>Мин. цена</label><input id="min_price" type="number" min="0" placeholder="0"></div><div class="f"><label>Макс. цена</label><input id="max_price" type="number" min="0" placeholder="500"></div><div class="f"><label>Исключить</label><input id="minus_words" type="text" placeholder="kids, fake"></div></div><button type="submit" class="main-btn" id="submitBtn">Создать поиск</button></form></div></div><div class="page" id="tabProfile"><div class="hdr"><h1>Профиль</h1><p class="sub">Активные поиски</p></div><div class="glass"><div class="glass-top"><span class="glass-t">Активные поиски</span><span class="badge" id="sCnt">0</span></div><div id="sList"></div></div></div><nav class="bar"><button class="tab active" data-tab="tabSearch"><span>Поиск</span></button><button class="tab" data-tab="tabProfile"><span>Профиль</span></button></nav></div><div class="toast hidden" id="toast"></div><script src="app.js"></script></body></html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050609">
+<title>štelł</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="vinted-mark" aria-label="Vinted">Vinted</div>
+    <div class="brand-title">štelł</div>
+    <div class="topbar-balance" aria-hidden="true"></div>
+  </header>
+
+  <main class="viewport">
+    <section class="page active" id="tabSearch">
+      <div class="section-head">
+        <h1>Создать поиск</h1>
+      </div>
+
+      <form class="glass-panel search-panel" id="searchForm" autocomplete="off">
+        <div class="panel-top">
+          <span class="panel-title" id="formTitle">Новый поиск</span>
+          <button class="icon-button hidden" id="cancelBtn" type="button" aria-label="Отменить редактирование">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <label class="field">
+          <span>Название товара</span>
+          <input id="query" type="text" placeholder="Название товара" maxlength="120" required>
+        </label>
+
+        <div class="field">
+          <span>Домены поиска Vinted</span>
+          <div class="domain-grid" id="regionGrid"></div>
+        </div>
+
+        <div class="filter-grid">
+          <label class="field">
+            <span>Категория</span>
+            <select id="category">
+              <option value="clothes">Одежда</option>
+              <option value="shoes">Обувь</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Макс. цена</span>
+            <input id="max_price" type="number" min="0" inputmode="decimal" placeholder="500">
+          </label>
+
+          <label class="field">
+            <span>Размер</span>
+            <input id="size" type="text" placeholder="M, L, XL / 42" maxlength="60">
+          </label>
+        </div>
+
+        <button type="submit" class="primary-button" id="submitBtn">Создать поиск</button>
+      </form>
+    </section>
+
+    <section class="page" id="tabProfile">
+      <div class="section-head">
+        <h1>Профиль</h1>
+      </div>
+
+      <section class="profile-card glass-panel">
+        <div class="avatar" id="ava">
+          <span id="avaL">?</span>
+          <img id="avaI" class="hidden" alt="">
+        </div>
+        <div class="profile-name" id="pName">—</div>
+        <div class="profile-user" id="pUser">—</div>
+        <div class="chat-pill">
+          <span>chat_id</span>
+          <strong id="sId">—</strong>
+        </div>
+      </section>
+
+      <section class="search-count glass-panel">
+        <span>Поисков сейчас</span>
+        <strong id="sCount">—</strong>
+      </section>
+
+      <section class="glass-panel searches-panel">
+        <div class="panel-top">
+          <span class="panel-title">Все поиски</span>
+          <span class="count-badge" id="sCnt">0</span>
+        </div>
+        <div class="search-list" id="sList"></div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Вкладки">
+    <button class="tab active" data-tab="tabSearch" type="button">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m16.5 16.5 4.5 4.5"></path>
+      </svg>
+      <span>Поиск</span>
+    </button>
+    <button class="tab" data-tab="tabProfile" type="button">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 20.5a7 7 0 0 0-14 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
+      <span>Профиль</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal-sheet glass-panel">
+    <div class="modal-title" id="confirmTitle">Удалить поиск?</div>
+    <div class="modal-text" id="confirmText">Это действие нельзя отменить.</div>
+    <div class="modal-actions">
+      <button class="secondary-button" id="confirmCancel" type="button">Отмена</button>
+      <button class="danger-button" id="confirmDelete" type="button">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
